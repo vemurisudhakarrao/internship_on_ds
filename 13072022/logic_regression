@@ -1,0 +1,356 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Importing the libraries 
+
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+
+# Ignore harmless warnings 
+
+import warnings 
+warnings.filterwarnings("ignore")
+
+# Set to display all the columns in dataset
+
+pd.set_option("display.max_columns", None)
+
+# Import psql to run queries 
+
+import pandasql as psql
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Load the Bank Marketing Campaign (BMC) data
+
+BMCdata = pd.read_csv(r"D:\00 Datasets\Bank\bank-additional-full-V1.0.csv", header=0)
+
+# Copy to back-up file
+
+BMCdata_BK = BMCdata.copy()
+
+# display first 5 records
+
+BMCdata.head()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display the dataset information
+
+BMCdata.info()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display unique values counts for each variable
+
+BMCdata.nunique()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace target variable 'Deposit', 'Yes' to 1 and 'No' to 0 and # convert the 'y' to integer value.
+
+BMCdata['Deposit'] = BMCdata['Deposit'].str.replace('yes', '1')
+BMCdata['Deposit'] = BMCdata['Deposit'].str.replace('no', '0')
+BMCdata['Deposit'] = BMCdata['Deposit'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Count the target or dependent variable by '0' & '1' and 
+# their proportion (> 10 : 1, then the dataset is imbalance dataset)
+
+BMCdata_count = BMCdata.Deposit.value_counts()
+print('Class 0:', BMCdata_count[0])
+print('Class 1:', BMCdata_count[1])
+print('Proportion:', round(BMCdata_count[0] / BMCdata_count[1], 2), ': 1')
+print('Total CC Trans:', len(BMCdata))
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Displaying Duplicate values with in dataset
+
+BMCdata_dup = BMCdata[BMCdata.duplicated(keep='last')]
+BMCdata_dup
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Remove the identified duplicate records 
+
+BMCdata = BMCdata.drop_duplicates()
+BMCdata.shape
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Re-setting the row index
+
+BMCdata = BMCdata.reset_index(drop=True)
+
+# copy the back-up file deletion of records
+
+BMCdata_BK2 = BMCdata.copy()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display the data by variables wise
+
+for i in BMCdata.columns:
+    print(BMCdata[i].value_counts())
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'Housing' categorical variable 
+
+BMCdata['housing'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace 'housing' variable and convert the 'housing' to integer value.
+
+BMCdata['housing'] = BMCdata['housing'].str.replace('yes', '1')
+BMCdata['housing'] = BMCdata['housing'].str.replace('no', '0')
+BMCdata['housing'] = BMCdata['housing'].str.replace('unk0wn', '0')
+BMCdata['housing'] = BMCdata['housing'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'loan' categorical variable 
+
+BMCdata['loan'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace 'loan' variable, and convert the 'loan' to integer value.
+
+BMCdata['loan'] = BMCdata['loan'].str.replace('yes', '1')
+BMCdata['loan'] = BMCdata['loan'].str.replace('no', '0')
+BMCdata['loan'] = BMCdata['loan'].str.replace('unk0wn', '0')
+BMCdata['loan'] = BMCdata['loan'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'job' categorical variable 
+
+BMCdata['job'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace 'job' variable, and convert the 'loan' to integer value.
+
+BMCdata['job'] = BMCdata['job'].str.replace('admin.', '3')
+BMCdata['job'] = BMCdata['job'].str.replace('blue-collar', '4')
+BMCdata['job'] = BMCdata['job'].str.replace('technician', '3')
+BMCdata['job'] = BMCdata['job'].str.replace('services', '2')
+BMCdata['job'] = BMCdata['job'].str.replace('management', '4')
+BMCdata['job'] = BMCdata['job'].str.replace('retired', '3')
+BMCdata['job'] = BMCdata['job'].str.replace('entrepreneur', '5')
+BMCdata['job'] = BMCdata['job'].str.replace('self-employed', '2')
+BMCdata['job'] = BMCdata['job'].str.replace('housemaid', '1')
+BMCdata['job'] = BMCdata['job'].str.replace('unemployed', '0')
+BMCdata['job'] = BMCdata['job'].str.replace('student', '0')
+BMCdata['job'] = BMCdata['job'].str.replace('unknown', '0')
+BMCdata['job'] = BMCdata['job'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'education' categorical variable 
+
+BMCdata['education'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace the variable 'education', convert the 'education' to integer value.
+
+BMCdata['education'] = BMCdata['education'].str.replace('illiterate', '1')
+BMCdata['education'] = BMCdata['education'].str.replace('unknown', '1')
+BMCdata['education'] = BMCdata['education'].str.replace('basic.4y', '2')
+BMCdata['education'] = BMCdata['education'].str.replace('basic.6y', '2')
+BMCdata['education'] = BMCdata['education'].str.replace('basic.9y', '2')
+BMCdata['education'] = BMCdata['education'].str.replace('high.school', '3')
+BMCdata['education'] = BMCdata['education'].str.replace('professional.course', '4')
+BMCdata['education'] = BMCdata['education'].str.replace('university.degree', '5')
+BMCdata['education'] = BMCdata['education'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'marital' categorical variable 
+
+BMCdata['marital'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace variable 'marital', and convert the 'marital' to integer value.
+
+BMCdata['marital'] = BMCdata['marital'].str.replace('single', '1')
+BMCdata['marital'] = BMCdata['marital'].str.replace('married', '2')
+BMCdata['marital'] = BMCdata['marital'].str.replace('divorced', '3')
+BMCdata['marital'] = BMCdata['marital'].str.replace('unknown', '1')
+BMCdata['marital'] = BMCdata['marital'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Delete 'default' bcoz it may not infulence the target
+
+del BMCdata['default']
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'contact' categorical variable 
+
+BMCdata['contact'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace variable 'contact', and convert the 'contact' to integer value.
+
+BMCdata['contact'] = BMCdata['contact'].str.replace('telephone', '1')
+BMCdata['contact'] = BMCdata['contact'].str.replace('cellular', '2')
+BMCdata['contact'] = BMCdata['contact'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'day_of_week' categorical variable 
+
+BMCdata['day_of_week'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace variable 'day_of_week', and convert the 'day_of_week' to integer value.
+
+BMCdata['day_of_week'] = BMCdata['day_of_week'].str.replace('mon', '1')
+BMCdata['day_of_week'] = BMCdata['day_of_week'].str.replace('tue', '2')
+BMCdata['day_of_week'] = BMCdata['day_of_week'].str.replace('wed', '3')
+BMCdata['day_of_week'] = BMCdata['day_of_week'].str.replace('thu', '4')
+BMCdata['day_of_week'] = BMCdata['day_of_week'].str.replace('fri', '5')
+BMCdata['day_of_week'] = BMCdata['day_of_week'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'month' categorical variable 
+
+BMCdata['month'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace variable 'month', and convert the 'month' to integer value.
+
+BMCdata['month'] = BMCdata['month'].str.replace('mar', '3')
+BMCdata['month'] = BMCdata['month'].str.replace('apr', '4')
+BMCdata['month'] = BMCdata['month'].str.replace('may', '5')
+BMCdata['month'] = BMCdata['month'].str.replace('jun', '6')
+BMCdata['month'] = BMCdata['month'].str.replace('jul', '7')
+BMCdata['month'] = BMCdata['month'].str.replace('aug', '8')
+BMCdata['month'] = BMCdata['month'].str.replace('sep', '9')
+BMCdata['month'] = BMCdata['month'].str.replace('oct', '10')
+BMCdata['month'] = BMCdata['month'].str.replace('nov', '11')
+BMCdata['month'] = BMCdata['month'].str.replace('dec', '12')
+BMCdata['month'] = BMCdata['month'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display 'poutcome' categorical variable 
+
+BMCdata['poutcome'].value_counts()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Replace variable 'poutcome', and convert the 'poutcome' to integer value.
+
+BMCdata['poutcome'] = BMCdata['poutcome'].str.replace('nonexistent', '0')
+BMCdata['poutcome'] = BMCdata['poutcome'].str.replace('failure', '1')
+BMCdata['poutcome'] = BMCdata['poutcome'].str.replace('success', '2')
+BMCdata['poutcome'] = BMCdata['poutcome'].astype(int)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Display the dataset information after converting the variables
+
+BMCdata.info()
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Delete the unneccasry variables
+
+del BMCdata['emp.var.rate']
+del BMCdata['cons.price.idx']
+del BMCdata['cons.conf.idx']
+del BMCdata['euribor3m']
+del BMCdata['nr.employed']
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Identify the Independent and Target variables
+
+IndepVar = []
+for col in BMCdata.columns:
+    if col != 'Deposit':
+        IndepVar.append(col)
+
+TargetVar = 'Deposit'
+
+x = BMCdata[IndepVar]
+y = BMCdata[TargetVar]
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Split the data into train and test (random sampling)
+
+from sklearn.model_selection import train_test_split 
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+x_train.shape, x_test.shape, y_train.shape, y_test.shape
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Scaling the features by using MinMaxScaler
+
+from sklearn.preprocessing import MinMaxScaler
+
+mmscaler = MinMaxScaler(feature_range=(0, 1))
+
+x_train = mmscaler.fit_transform(x_train)
+x_train = pd.DataFrame(x_train)
+
+x_test = mmscaler.fit_transform(x_test)
+x_test = pd.DataFrame(x_test)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# To build the decision tree model with random sampling
+
+from sklearn.linear_model import LogisticRegression 
+
+# Create an object for LR model
+
+BMCdataLR = LogisticRegression()
+
+# Train the model with training data
+
+BMCdataLR = BMCdataLR.fit(x_train,y_train)
+
+# Predict the model with test data set
+
+y_pred = BMCdataLR.predict(x_test)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# confusion matrix in sklearn
+
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+
+# actual values
+
+actual = y_test
+
+# predicted values
+
+predicted = y_pred
+
+# confusion matrix
+
+matrix = confusion_matrix(actual,predicted, labels=[1,0],sample_weight=None, normalize=None)
+print('Confusion matrix : \n', matrix)
+
+# outcome values order in sklearn
+
+tp, fn, fp, tn = confusion_matrix(actual,predicted,labels=[1,0]).reshape(-1)
+print('Outcome values : \n', tp, fn, fp, tn)
+
+# classification report for precision, recall f1-score and accuracy
+
+C_Report = classification_report(actual,predicted,labels=[1,0])
+
+print('Classification report : \n', C_Report)
+
+# calculating the metrics
+
+sensitivity = round(tp/(tp+fn), 3);
+specificity = round(tn/(tn+fp), 3);
+accuracy = round((tp+tn)/(tp+fp+tn+fn), 3);
+balanced_accuracy = round((sensitivity+specificity)/2, 3);
+    
+precision = round(tp/(tp+fp), 3);
+f1Score = round((2*tp/(2*tp + fp + fn)), 3);
+
+# Matthews Correlation Coefficient (MCC). Range of values of MCC lie between -1 to +1. 
+# A model with a score of +1 is a perfect model and -1 is a poor model
+
+from math import sqrt
+
+mx = (tp+fp) * (tp+fn) * (tn+fp) * (tn+fn)
+MCC = round(((tp * tn) - (fp * fn)) / sqrt(mx), 3)
+
+print('Accuracy :', round(accuracy*100, 2),'%')
+print('Precision :', round(precision*100, 2),'%')
+print('Recall :', round(sensitivity*100,2), '%')
+print('F1 Score :', f1Score)
+print('Specificity or True Negative Rate :', round(specificity*100,2), '%'  )
+print('Balanced Accuracy :', round(balanced_accuracy*100, 2),'%')
+print('MCC :', MCC)
+
+# Area under ROC curve 
+
+from sklearn.metrics import roc_curve, roc_auc_score
+
+print('roc_auc_score:', round(roc_auc_score(y_test, y_pred), 3))
+
+# ROC Curve
+
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_curve
+logit_roc_auc = roc_auc_score(y_test, y_pred)
+fpr, tpr, thresholds = roc_curve(y_test,BMCdataLR.predict_proba(x_test)[:,1])
+plt.figure()
+# plt.plot(fpr, tpr, label='Logistic Regression (area = %0.2f)' % logit_roc_auc)
+plt.plot(fpr, tpr, label= 'Classification Model' % logit_roc_auc)
+plt.plot([0, 1], [0, 1],'r--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic')
+plt.legend(loc="lower right")
+#plt.savefig('Log_ROC')
+plt.show() 
+print('-----------------------------------------------------------------------------------------------------')
+--------------------------------------------------------------------------------------------------------------------------------------------------
+# Results
+
+PredResults = pd.DataFrame({'Deposit':y_test, 'Deposit_Pred':y_pred})
+
+# Merge two Dataframes on index of both the dataframes
+
+TestDataResults = BMCdata_BK2.merge(PredResults, left_index=True, right_index=True)
+
+# Display 10 records randomly
+
+TestDataResults.sample(20)
+--------------------------------------------------------------------------------------------------------------------------------------------------
