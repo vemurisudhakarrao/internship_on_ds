@@ -1,0 +1,235 @@
+-----------------------------------------------------------------------------------------------------------
+# Importing the libraries 
+
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+
+# Ignore harmless warnings 
+
+import warnings 
+warnings.filterwarnings("ignore")
+
+# Set to display all the columns in dataset
+
+pd.set_option("display.max_columns", None)
+
+# Import psql to run queries 
+
+import pandasql as psql
+-----------------------------------------------------------------------------------------------------------
+# load the Health Insurance dataset 
+
+HealthIns = pd.read_csv(r"D:\00 Henotic\SRKR\Datasets\Health_Ins_Expenses.csv", header=0)
+
+# copy to back-up file
+
+HealthIns_BK = HealthIns.copy()
+
+# Display the first 5 records
+
+HealthIns.head()
+-----------------------------------------------------------------------------------------------------------
+# Display the dataset information
+
+HealthIns.info()
+-----------------------------------------------------------------------------------------------------------
+# Displaying Duplicate values with in dataset
+
+HealthIns_dup = HealthIns[HealthIns.duplicated(keep='last')]
+HealthIns_dup
+-----------------------------------------------------------------------------------------------------------
+# Remove the identified duplicate records 
+
+HealthIns = HealthIns.drop_duplicates()
+
+# Display the shape of the dataset
+
+HealthIns.shape
+-----------------------------------------------------------------------------------------------------------
+# Re-setting the row index
+
+HealthIns = HealthIns.reset_index(drop=True)
+-----------------------------------------------------------------------------------------------------------
+# Display the unique values of the all the variables
+
+HealthIns.nunique()
+-----------------------------------------------------------------------------------------------------------
+# Display the missing values information of variables
+
+HealthIns.isnull().sum()
+-----------------------------------------------------------------------------------------------------------
+# Display 'Gender' categorical variable 
+
+HealthIns['Gender'].value_counts()
+-----------------------------------------------------------------------------------------------------------
+# Replace 'Gender' variable and convert to integer value.
+
+HealthIns['Gender'] = HealthIns['Gender'].str.replace('female', '0')
+HealthIns['Gender'] = HealthIns['Gender'].str.replace('male', '1')
+HealthIns['Gender'] = HealthIns['Gender'].astype(int)
+-----------------------------------------------------------------------------------------------------------
+# Display 'Smoker' categorical variable 
+
+HealthIns['Smoker'].value_counts()
+-----------------------------------------------------------------------------------------------------------
+# Replace 'Smoker' variable and convert integer value.
+
+HealthIns['Smoker'] = HealthIns['Smoker'].str.replace('no', '0')
+HealthIns['Smoker'] = HealthIns['Smoker'].str.replace('yes', '1')
+HealthIns['Smoker'] = HealthIns['Smoker'].astype(int)
+-----------------------------------------------------------------------------------------------------------
+# Display 'Region' categorical variable 
+
+HealthIns['Region'].value_counts()
+-----------------------------------------------------------------------------------------------------------
+# Replace 'Region' variable and convert to integer value.
+
+HealthIns['Region'] = HealthIns['Region'].str.replace('northeast', '0')
+HealthIns['Region'] = HealthIns['Region'].str.replace('northwest', '1')
+HealthIns['Region'] = HealthIns['Region'].str.replace('southeast', '2')
+HealthIns['Region'] = HealthIns['Region'].str.replace('southwest', '3')
+HealthIns['Region'] = HealthIns['Region'].astype(int)
+-----------------------------------------------------------------------------------------------------------
+# Display the dataset information after transformation of data
+
+HealthIns.info()
+-----------------------------------------------------------------------------------------------------------
+# Display all the variables
+
+HealthIns.columns
+-----------------------------------------------------------------------------------------------------------
+# Identify the variables for scaling (MinMaxScalar)
+
+cols = ['Age', 'BMI', 'Children','Region']
+-----------------------------------------------------------------------------------------------------------
+# Delete variables which are not influencing the target variable
+
+del HealthIns['Record_ID']
+-----------------------------------------------------------------------------------------------------------
+# Identify the independent and Target (dependent) variables
+
+IndepVar = []
+for col in HealthIns.columns:
+    if col != 'Expenses':
+        IndepVar.append(col)
+
+TargetVar = 'Expenses'
+
+x = HealthIns[IndepVar]
+y = HealthIns[TargetVar]
+-----------------------------------------------------------------------------------------------------------
+# Split the data into train and test (random sampling)
+
+from sklearn.model_selection import train_test_split 
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+
+x_train_bk = x_train.copy()
+x_test_bk = x_test.copy()
+-----------------------------------------------------------------------------------------------------------
+# Scaling the features by using MinMaxScaler
+
+from sklearn.preprocessing import MinMaxScaler
+
+mmscaler = MinMaxScaler(feature_range=(0, 1))
+
+x_train[cols] = mmscaler.fit_transform(x_train[cols])
+x_train = pd.DataFrame(x_train)
+
+x_test[cols] = mmscaler.fit_transform(x_test[cols])
+x_test = pd.DataFrame(x_test)
+-----------------------------------------------------------------------------------------------------------
+# Correlation coefficient for training dataset before scaling
+
+x_train_bk.corr()
+-----------------------------------------------------------------------------------------------------------
+# Correlation coefficient for training dataset after scaling
+
+x_train.corr()
+-----------------------------------------------------------------------------------------------------------
+# Correlation coefficient for testing dataset before scaling
+
+x_test_bk.corr()
+-----------------------------------------------------------------------------------------------------------
+# Correlation coefficient for testing dataset after scaling
+
+x_test.corr()
+-----------------------------------------------------------------------------------------------------------
+# Regression Algorithm - Healthcare Data
+-----------------------------------------------------------------------------------------------------------
+# Train the algorithm and build the model with train dataset
+
+from sklearn.linear_model import LinearRegression
+
+# Create object for regression model
+
+ModelRGR = LinearRegression()
+
+# Train the model with training dataset
+
+ModelRGR.fit(x_train, y_train)
+
+# Predict the model with test dataset
+
+y_pred = ModelRGR.predict(x_test)
+-----------------------------------------------------------------------------------------------------------
+# Evaluation metrics for Regression analysis
+
+from sklearn import metrics
+
+print('Mean Absolute Error (MAE):', round(metrics.mean_absolute_error(y_test, y_pred),3))  
+print('Mean Squared Error (MSE):', round(metrics.mean_squared_error(y_test, y_pred),3))  
+print('Root Mean Squared Error (RMSE):', round(np.sqrt(metrics.mean_squared_error(y_test, y_pred)),3))
+print('R2_score:', round(metrics.r2_score(y_test, y_pred),6))
+print('Root Mean Squared Log Error (RMSLE):', round(np.log(np.sqrt(metrics.mean_squared_error(y_test, y_pred))),3))
+
+# Define the function to calculate the MAPE - Mean Absolute Percentage Error
+
+def MAPE (y_test, y_pred): 
+    y_test, y_pred = np.array(y_test), np.array(y_pred)
+    return np.mean(np.abs((y_test - y_pred) / y_test)) * 100
+
+# Evaluation of MAPE 
+
+result = MAPE(y_test, y_pred)
+print('Mean Absolute Percentage Error (MAPE):', round(result, 3), '%')
+
+# Calculate Adjusted R squared values 
+
+r_squared = round(metrics.r2_score(y_test, y_pred),6)
+adjusted_r_squared = round(1 - (1-r_squared)*(len(y)-1)/(len(y)-x.shape[1]-1),6)
+print('Adj R Square: ', adjusted_r_squared)
+-----------------------------------------------------------------------------------------------------------
+Results = pd.DataFrame({'Expenses_A':y_test, 'Expenses_P':y_pred})
+
+# Merge two Dataframes on index of both the dataframes
+
+ResultsFinal = HealthIns_BK.merge(Results, left_index=True, right_index=True)
+ResultsFinal.sample(10)
+-----------------------------------------------------------------------------------------------------------
+# Display the back-up file to sql queries
+
+HealthIns_BK.head()
+-----------------------------------------------------------------------------------------------------------
+Data_QP_New01 = psql.sqldf("select * \
+                           from HealthIns_BK \
+                           where Age > 25 \
+                           and Gender = 'male'\
+                           and Children = 2 \
+                           ")
+                           
+Data_QP_New01.head()
+-----------------------------------------------------------------------------------------------------------
+Data_QP_New02 = psql.sqldf("select * \
+                           from HealthIns_BK \
+                           where Age < 25 \
+                           and Gender = 'female' \
+                           ")
+                           
+Data_QP_New02.head()
+-----------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------
+
+
