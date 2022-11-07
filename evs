@@ -1,0 +1,88 @@
+
+import java.util.*; 
+class A3_Q2{
+
+ 		 
+		
+    			
+ 		
+   
+    public static void main(String[] args) {
+	Scanner input = new Scanner(System.in);
+	Dictionary dict = new Hashtable();
+	dict.put(11, "JANE DOE");  
+	dict.put(12, "JHON DOE");  
+	dict.put(10, "TANGO ZULU");  
+	dict.put(15, "STERRA ROMEO"); 
+	int votes[]={0,0,0,0};
+	
+	
+
+	 
+	
+	A3_Q2 obj =new A3_Q2();
+	int n,key; 
+        System.out.println("Welcome to Simple Electronic Voting System (SEVS): ");
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("Please Enter a String collection of Electroal Candidate Below");
+        System.out.println("+++++++++++++++++++++++++++++++");
+        System.out.println("| Code >> Description         |");
+        System.out.println("+++++++++++++++++++++++++++++++");
+	System.out.println("| 1 >> Display candidates     |");
+        System.out.println("| 2 >> Vote a candidates      |");
+	System.out.println("| 3 >> Add new candidate(s)   |");
+        System.out.println("| 4 >> Display Results        |");
+        System.out.println("| 0 >> End SEVS               |");
+	System.out.println("+++++++++++++++++++++++++++++++");
+	System.out.println("" + dict);
+	System.out.println("Enter a code, from the aforcementioned,the corresponds to your task:");
+	n=input.nextInt();
+	Enumeration enm1 = dict.keys();
+	Enumeration enm2 = dict.elements();
+	while (n<4)
+       {
+                if(n==0)
+		{
+		  break;
+		}
+   		switch(n){
+        		case 1:
+			
+		
+           		System.out.println("+++++++++++++++++++++++++++++++");
+        		System.out.println("| Id >> Description         |");
+			for(int i=0;i<dict.size();i++)
+			{
+			    
+			    System.out.println("| "+enm1.nextElement()+" >> "+enm2.nextElement()+"       |");
+			}
+			System.out.println("+++++++++++++++++++++++++++++++");
+			break;
+
+       		       case 2:
+			  System.out.println("Please enter the ID of the candidate you wish to vote for:");
+			key=input.nextInt();
+			if(key==11)
+			votes[0]+=1;
+			if(key==12)
+			votes[1]+=1;
+			if(key==10)
+			votes[2]+=1;
+			if(key==15)
+			votes[3]+=1;
+			System.out.println("Your ballot has been successfully casted:"+dict.get(key)+"  bearing Candidate ID:"+key);
+           		  
+          		 break;
+
+        		case 3:
+          		
+           		break;
+                        case 4:
+          	
+           		break;
+      			}
+     System.out.println("Kindly continue by entering a valid code,from the aforemenntioned,which corresponds to your task:");
+      n= input.nextInt();
+ }
+    }
+}
