@@ -1,4 +1,3 @@
-
 import java.util.*; 
 class A3_Q2{
 
@@ -15,24 +14,30 @@ class A3_Q2{
 	dict.put(10, "TANGO ZULU");  
 	dict.put(15, "STERRA ROMEO"); 
 	int votes[]={0,0,0,0};
+	Dictionary dict_count = new Hashtable();
+	dict_count.put(11, 0);  
+	dict_count.put(12, 0);  
+	dict_count.put(10, 0);  
+    dict_count.put(15, 0); 
 	
 	
 
 	 
 	
 	A3_Q2 obj =new A3_Q2();
-	int n,key; 
-        System.out.println("Welcome to Simple Electronic Voting System (SEVS): ");
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println("Please Enter a String collection of Electroal Candidate Below");
-        System.out.println("+++++++++++++++++++++++++++++++");
-        System.out.println("| Code >> Description         |");
-        System.out.println("+++++++++++++++++++++++++++++++");
+	int n,key,ID; 
+  
+    System.out.println("Welcome to Simple Electronic Voting System (SEVS): ");
+    System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    System.out.println("Please Enter a String collection of Electroal Candidate Below");
+    System.out.println("+++++++++++++++++++++++++++++++");
+    System.out.println("| Code >> Description         |");
+    System.out.println("+++++++++++++++++++++++++++++++");
 	System.out.println("| 1 >> Display candidates     |");
-        System.out.println("| 2 >> Vote a candidates      |");
+    System.out.println("| 2 >> Vote a candidates      |");
 	System.out.println("| 3 >> Add new candidate(s)   |");
-        System.out.println("| 4 >> Display Results        |");
-        System.out.println("| 0 >> End SEVS               |");
+    System.out.println("| 4 >> Display Results        |");
+    System.out.println("| 0 >> End SEVS               |");
 	System.out.println("+++++++++++++++++++++++++++++++");
 	System.out.println("" + dict);
 	System.out.println("Enter a code, from the aforcementioned,the corresponds to your task:");
@@ -47,42 +52,49 @@ class A3_Q2{
 		}
    		switch(n){
         		case 1:
-			
-		
-           		System.out.println("+++++++++++++++++++++++++++++++");
-        		System.out.println("| Id >> Description         |");
-			for(int i=0;i<dict.size();i++)
-			{
-			    
-			    System.out.println("| "+enm1.nextElement()+" >> "+enm2.nextElement()+"       |");
-			}
-			System.out.println("+++++++++++++++++++++++++++++++");
-			break;
+						System.out.println("+++++++++++++++++++++++++++++++");
+						System.out.println("| Id >> Description         |");
+						for(int i=0;i<dict.size();i++)
+						{
+							
+							System.out.println("| "+enm1.nextElement()+" >> "+enm2.nextElement()+"       |");
+						}
+						System.out.println("+++++++++++++++++++++++++++++++");
+						break;
 
-       		       case 2:
-			  System.out.println("Please enter the ID of the candidate you wish to vote for:");
-			key=input.nextInt();
-			if(key==11)
-			votes[0]+=1;
-			if(key==12)
-			votes[1]+=1;
-			if(key==10)
-			votes[2]+=1;
-			if(key==15)
-			votes[3]+=1;
-			System.out.println("Your ballot has been successfully casted:"+dict.get(key)+"  bearing Candidate ID:"+key);
-           		  
-          		 break;
+       		    case 2:
+						System.out.println("Please enter the ID of the candidate you wish to vote for:");
+						key=input.nextInt();
+						if(key==11)
+						votes[0]+=1;
+						if(key==12)
+						votes[1]+=1;
+						if(key==10)
+						votes[2]+=1;
+						if(key==15)
+						votes[3]+=1;
+						System.out.println("Your ballot has been successfully casted:"+dict.get(key)+"  bearing Candidate ID:"+key);
+							
+						break;
 
         		case 3:
-          		
-           		break;
-                        case 4:
-          	
-           		break;
+						System.out.println("Please enter a String collection of the NEW Electroal candidates below: ");
+						System.out.println("enter id:");
+						ID=input.nextInt();
+						System.out.println("enter Name:");
+						String str= input.next(); 
+						dict.put(ID,str);
+						dict_count.put(ID,0);
+						System.out.println("Successfully added a NEW set of electoral candidates to the Simple Electronic Voting System  (SEVS)");
+						break;
+                case 4:
+						System.out.println("++++++++++++++++++++++++++++++++++++++++++");
+						System.out.println("| Position  |Votes/Ballots   | ID  | Candidate 's Name  |");         
+						System.out.println("++++++++++++++++++++++++++++++++++++++++++");
+						break;
       			}
-     System.out.println("Kindly continue by entering a valid code,from the aforemenntioned,which corresponds to your task:");
-      n= input.nextInt();
+    System.out.println("Kindly continue by entering a valid code,from the aforemenntioned,which corresponds to your task:");
+    n= input.nextInt();
  }
     }
 }
